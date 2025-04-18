@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root>
-  <windowclass name="closewindows">
+  <windowclass name="cascadewindows">
     <script>
       function onInit()
         self.close();
-        CloseWindows.closeWindows();
+        CascadeWindows.cascadeWindows();
       end
     </script>
     <sheetdata>
