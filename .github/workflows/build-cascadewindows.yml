@@ -50,7 +50,7 @@ jobs:
       run: chmod 644 build-linux/out/CascadeWindows.ext
 
     - name: Upload .ext file as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: CascadeWindows.ext
         path: build-linux/out/CascadeWindows.ext
