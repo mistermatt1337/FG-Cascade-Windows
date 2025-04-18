@@ -131,8 +131,7 @@ function cascadeWindows()
     -- Retrieve the list of open windows
     local openWindowList = Interface.getWindows()
 
-    -- Debug: Print the list of open windows
-    Debug.print("Open windows:", openWindowList)
+    --Debug.print("Open windows:", openWindowList)
 
     local startX, startY = 50, 50
     local offsetX, offsetY = 30, 30
@@ -140,8 +139,7 @@ function cascadeWindows()
 
     -- Iterate through each window in the list
     for i, window in ipairs(openWindowList) do
-        -- Debug: Print the window class
-        Debug.print("Processing window:", window.getClass())
+        --Debug.print("Processing window:", window.getClass())
 
         -- Delegate the positioning logic to cascadeWindow
         positionIndex = cascadeWindow(openWindowList, i, startX, startY, offsetX, offsetY, positionIndex)
@@ -179,8 +177,8 @@ function onWindowOpened(window)
     if type(window) == "windowinstance"
         and not isPanelWindow(sWindowClass) then
         table.insert(openWindowList, window);
-        Debug.print("Window added to openWindowList:", sWindowClass);
+        --Debug.print("Window added to openWindowList:", sWindowClass);
     else
-        Debug.print("Window excluded (panel or foundational):", sWindowClass);
+        --Debug.print("Window excluded (panel or foundational):", sWindowClass);
     end
 end
