@@ -73,13 +73,46 @@ function checkFGC()
 	return nMajor == 3 and nMinor == 3 and nPatch <= 15;
 end
 
+-- List of panel window classes to exclude
+local panelWindowClasses = {
+    "library",
+    "story_book_list",
+    "tokenbag",
+    "setup",
+    "desktopdecalfill",
+    "desktopdecal",
+    "shortcutsanchor",
+    "shortcuts",
+    "imagebackpanel",
+    "imagemaxpanel",
+    "chat",
+    "modifierstack",
+    "dicetower",
+    "imagefullpanel",
+    "dicepanel",
+    "characterlist"
+};
+
+-- Function to check if a window is a panel
+function isPanelWindow(sWindowClass)
+    for _, className in ipairs(panelWindowClasses) do
+        if sWindowClass == className then
+            return true;
+        end
+    end
+    return false;
+end
+
 function cascadeWindow(t, i, startX, startY, offsetX, offsetY, positionIndex)
     if t ~= nil
         and t[i] ~= nil
         and type(t[i]) == "windowinstance"
         and t[i].setPosition ~= nil then
+        local sWindowClass = t[i].getClass();
+
         -- Check if the window should be ignored
-        if ignoreCtOpen(t, i)
+        if isPanelWindow(sWindowClass)
+            or ignoreCtOpen(t, i)
             or ignoreImagesOpen(t, i)
             or ignorePsOpen(t, i)
             or ignoreTimerOpen(t, i) then
@@ -96,19 +129,20 @@ end
 
 function cascadeWindows()
     -- Retrieve the list of open windows
-    local openWindowList = Interface.getOpenWindowList()
+    local openWindowList = Interface.getWindows()
 
-    -- Define the initial position for the first window
+    -- Debug: Print the list of open windows
+    Debug.chat("Open windows:", openWindowList)
+
     local startX, startY = 50, 50
-
-    -- Define the offset for cascading
     local offsetX, offsetY = 30, 30
-
-    -- Initialize the position index
     local positionIndex = 0
 
     -- Iterate through each window in the list
     for i, window in ipairs(openWindowList) do
+        -- Debug: Print the window class
+        Debug.chat("Processing window:", window.getClass())
+
         -- Delegate the positioning logic to cascadeWindow
         positionIndex = cascadeWindow(openWindowList, i, startX, startY, offsetX, offsetY, positionIndex)
     end
@@ -143,10 +177,10 @@ function onWindowOpened(window)
 
     local sWindowClass = window.getClass();
     if type(window) == "windowinstance"
-        and sWindowClass ~= "menus_dropwindow"
-        and sWindowClass ~= "records_dropwindow"
-        and sWindowClass ~= "refmanuals_dropwindow"
-        and sWindowClass ~= "manualrolls" then
+        and not isPanelWindow(sWindowClass) then
         table.insert(openWindowList, window);
+        Debug.chat("Window added to openWindowList:", sWindowClass);
+    else
+        Debug.chat("Window excluded (panel or foundational):", sWindowClass);
     end
 end
