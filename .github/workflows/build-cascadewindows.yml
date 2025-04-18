@@ -40,8 +40,17 @@ jobs:
         zip -r CascadeWindows.zip CascadeWindows
         mv CascadeWindows.zip CascadeWindows.ext
 
+    - name: Debug output directory
+      run: ls -l build-linux/out
+
+    - name: Verify .ext file exists
+      run: ls -l build-linux/out/CascadeWindows.ext
+
+    - name: Fix file permissions
+      run: chmod 644 build-linux/out/CascadeWindows.ext
+
     - name: Upload .ext file as artifact
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@v3
       with:
         name: CascadeWindows.ext
         path: build-linux/out/CascadeWindows.ext
