@@ -37,8 +37,7 @@ jobs:
     - name: Create .ext file
       run: |
         cd build-linux/out/CascadeWindows
-        zip -r CascadeWindows.zip ./*
-        mv CascadeWindows.zip ../CascadeWindows.ext
+        zip -r CascadeWindows.ext ./*
 
     - name: Debug output directory
       run: ls -l build-linux/out

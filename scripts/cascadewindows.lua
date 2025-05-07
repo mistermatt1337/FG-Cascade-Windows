@@ -1,7 +1,9 @@
 CASCADEWINDOWS_IGNORE_CT_OPEN = "CASCADEWINDOWS_IGNORE_CT_OPEN";
-CASCADEWINDOWS_IGNORE_IMAGES_OPEN = "CASCADEWINDOWS_IGNORE_IMAGES_OPEN";
 CASCADEWINDOWS_IGNORE_PS_OPEN = "CASCADEWINDOWS_IGNORE_PS_OPEN";
+CASCADEWINDOWS_IGNORE_TOOLS_OPEN = "CASCADEWINDOWS_IGNORE_TOOLS_OPEN";
+CASCADEWINDOWS_IGNORE_LIBRARY_OPEN = "CASCADEWINDOWS_IGNORE_LIBRARY_OPEN";
 CASCADEWINDOWS_IGNORE_TIMER_OPEN = "CASCADEWINDOWS_IGNORE_TIMER_OPEN";
+CASCADEWINDOWS_IGNORE_IMAGES_OPEN = "CASCADEWINDOWS_IGNORE_IMAGES_OPEN";
 IS_FGC = false;
 OFF = "off";
 ON = "on";
@@ -29,11 +31,15 @@ function onInit()
 
     OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_CT_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_CT_OPEN", option_entry_cycler,
     { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
-    OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_IMAGES_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_IMAGES_OPEN", option_entry_cycler,
-    { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
     OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_PS_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_PS_OPEN", option_entry_cycler,
     { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
+    OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_TOOLS_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_TOOLS_OPEN", option_entry_cycler,
+    { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
+    OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_LIBRARY_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_LIBRARY_OPEN", option_entry_cycler,
+    { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
     OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_TIMER_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_TIMER_OPEN", option_entry_cycler,
+    { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
+    OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_IMAGES_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_IMAGES_OPEN", option_entry_cycler,
     { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
     Comm.registerSlashHandler("ccw", cascadeWindows);
 end
@@ -53,54 +59,11 @@ function onTabletopInit()
     end
 end
 
-function arrayIterate(t, fnProcess)
-    local n = #t
-
-    for i = 1, n do
-        if t[i] ~= nil then
-            -- Call the provided function for each item
-            fnProcess(t, i)
-        end
-    end
-
-    return t
-end
-
 function checkFGC()
 	local nMajor, nMinor, nPatch = Interface.getVersion()
 	if nMajor <= 2 then return true end
 	if nMajor == 3 and nMinor <= 2 then return true end
 	return nMajor == 3 and nMinor == 3 and nPatch <= 15;
-end
-
--- List of panel window classes to exclude
-local panelWindowClasses = {
-    "library",
-    "story_book_list",
-    "tokenbag",
-    "setup",
-    "desktopdecalfill",
-    "desktopdecal",
-    "shortcutsanchor",
-    "shortcuts",
-    "imagebackpanel",
-    "imagemaxpanel",
-    "chat",
-    "modifierstack",
-    "dicetower",
-    "imagefullpanel",
-    "dicepanel",
-    "characterlist"
-};
-
--- Function to check if a window is a panel
-function isPanelWindow(sWindowClass)
-    for _, className in ipairs(panelWindowClasses) do
-        if sWindowClass == className then
-            return true;
-        end
-    end
-    return false;
 end
 
 function cascadeWindow(t, i, startX, startY, offsetX, offsetY, positionIndex)
@@ -109,16 +72,10 @@ function cascadeWindow(t, i, startX, startY, offsetX, offsetY, positionIndex)
         and type(t[i]) == "windowinstance"
         and t[i].setPosition ~= nil then
         local sWindowClass = t[i].getClass();
-
         -- Check if the window should be ignored
-        if isPanelWindow(sWindowClass)
-            or ignoreCtOpen(t, i)
-            or ignoreImagesOpen(t, i)
-            or ignorePsOpen(t, i)
-            or ignoreTimerOpen(t, i) then
+        if shouldIgnoreWindow(t[i]) then
             return positionIndex -- Skip this window but keep the position index unchanged
         end
-
         -- Set the window's position
         t[i].setPosition(startX + positionIndex * offsetX, startY + positionIndex * offsetY)
         positionIndex = positionIndex + 1 -- Increment the position index for the next window
@@ -130,40 +87,69 @@ end
 function cascadeWindows()
     -- Retrieve the list of open windows
     local openWindowList = Interface.getWindows()
-
-    --Debug.print("Open windows:", openWindowList)
-
+    --Debug.chat("Open windows:", openWindowList)
     local startX, startY = 50, 50
     local offsetX, offsetY = 30, 30
     local positionIndex = 0
-
     -- Iterate through each window in the list
     for i, window in ipairs(openWindowList) do
-        --Debug.print("Processing window:", window.getClass())
-
+        --Debug.chat("Processing window:", window.getClass())
         -- Delegate the positioning logic to cascadeWindow
         positionIndex = cascadeWindow(openWindowList, i, startX, startY, offsetX, offsetY, positionIndex)
     end
 end
 
-function ignoreCtOpen(t, i)
-    local ignoreCtOpen = OptionsManager.isOption(CASCADEWINDOWS_IGNORE_CT_OPEN, ON);
-    return ignoreCtOpen and (t[i].getClass() == "combattracker_host" or t[i].getClass() == "combattracker_client");
-end
+local ignoreOptions = {
+    [CASCADEWINDOWS_IGNORE_CT_OPEN] = { "combattracker_host", "combattracker_client" },
+    [CASCADEWINDOWS_IGNORE_PS_OPEN] = { "partysheet_host", "partysheet_client" },
+    [CASCADEWINDOWS_IGNORE_TOOLS_OPEN] = { "calendar", "diceselect", "modifiers", "effectlist", "sound_context", "options" },
+    [CASCADEWINDOWS_IGNORE_LIBRARY_OPEN] = { "library", "tokenbag", "books_list", "masterindex" },
+    [CASCADEWINDOWS_IGNORE_TIMER_OPEN] = { "timerwindow" },
+    [CASCADEWINDOWS_IGNORE_IMAGES_OPEN] = { "imagewindow" },
+    ["TOP_LEVEL_WINDOWS"] = {
+        "desktopdecalfill",
+        "desktopdecal",
+        "shortcutsanchor",
+        "shortcuts",
+        "shortcutbar",
+        "imagebackpanel",
+        "imagemaxpanel",
+        "chat",
+        "modifierstack",
+        "desktop_setdc",
+        "dicetower",
+        "imagefullpanel",
+        "dicepanel",
+        "characterlist",
+        "tabletop_partylist",
+        "tabletop_combatlist"
+    }
+};
 
-function ignoreImagesOpen(t, i)
-    local ignoreImagesOpen = OptionsManager.isOption(CASCADEWINDOWS_IGNORE_IMAGES_OPEN, ON);
-    return ignoreImagesOpen and t[i].getClass() == "imagewindow";
-end
+function shouldIgnoreWindow(window)
+    local sWindowClass = window.getClass();
 
-function ignorePsOpen(t, i)
-    local ignorePsOpen = OptionsManager.isOption(CASCADEWINDOWS_IGNORE_PS_OPEN, ON);
-    return ignorePsOpen and (t[i].getClass() == "partysheet_host" or t[i].getClass() == "partysheet_client");
-end
+    -- Always ignore top-level windows
+    for _, className in ipairs(ignoreOptions["TOP_LEVEL_WINDOWS"]) do
+        if sWindowClass == className then
+            --Debug.chat("Ignoring top-level window:", sWindowClass);
+            return true;
+        end
+    end
 
-function ignoreTimerOpen(t, i)
-    local ignoreTimerOpen = OptionsManager.isOption(CASCADEWINDOWS_IGNORE_TIMER_OPEN, ON);
-    return ignoreTimerOpen and t[i].getClass() == "timerwindow";
+    -- Check user-configurable ignore options
+    for optionKey, classList in pairs(ignoreOptions) do
+        if optionKey ~= "TOP_LEVEL_WINDOWS" and OptionsManager.isOption(optionKey, ON) then
+            for _, className in ipairs(classList) do
+                if sWindowClass == className then
+                    --Debug.chat("Ignoring window due to option:", optionKey, "Class:", sWindowClass);
+                    return true;
+                end
+            end
+        end
+    end
+
+    return false;
 end
 
 function onWindowOpened(window)
@@ -174,11 +160,12 @@ function onWindowOpened(window)
     end
 
     local sWindowClass = window.getClass();
-    if type(window) == "windowinstance"
-        and not isPanelWindow(sWindowClass) then
+    if type(window) == "windowinstance" and not shouldIgnoreWindow(window) then
+        -- Add the window to the openWindowList if it is not ignored
         table.insert(openWindowList, window);
-        --Debug.print("Window added to openWindowList:", sWindowClass);
+        --Debug.chat("Window added to openWindowList:", sWindowClass);
     else
-        --Debug.print("Window excluded (panel or foundational):", sWindowClass);
+        -- Log why the window was excluded
+        --Debug.chat("Window excluded (ignored):", sWindowClass);
     end
 end
