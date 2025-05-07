@@ -36,20 +36,20 @@ jobs:
 
     - name: Create .ext file
       run: |
-        cd build-linux/out/CascadeWindows
-        zip -r CascadeWindows.ext ./*
+        cd build-linux/out/
+        zip -r ./CascadeWindows.ext ./* --exclude ./CascadeWindows.ext
 
     - name: Debug output directory
       run: ls -l build-linux/out
 
     - name: Verify .ext file exists
-      run: ls -l build-linux/out/CascadeWindows/CascadeWindows.ext
+      run: ls -l build-linux/out/CascadeWindows.ext
 
     - name: Fix file permissions
-      run: chmod 644 build-linux/out/CascadeWindows/CascadeWindows.ext
+      run: chmod 644 build-linux/out/CascadeWindows.ext
 
     - name: Upload .ext file as artifact
       uses: actions/upload-artifact@v4
       with:
         name: CascadeWindows.ext
-        path: build-linux/out/CascadeWindows/CascadeWindows.ext
+        path: build-linux/out/CascadeWindows.ext
