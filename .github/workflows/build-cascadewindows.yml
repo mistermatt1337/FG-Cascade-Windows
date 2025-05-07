@@ -1,0 +1,59 @@
+name: Build CascadeWindows Extension
+
+on:
+  push:
+    branches:
+      - forking
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install zip utility
+      run: sudo apt-get update && sudo apt-get install -y zip
+
+    - name: Prepare output directory
+      run: |
+        mkdir -p build-linux/out/CascadeWindows
+        mkdir -p build-linux/out/CascadeWindows/campaign
+        mkdir -p build-linux/out/CascadeWindows/graphics
+        mkdir -p build-linux/out/CascadeWindows/scripts
+
+    - name: Copy files to output directory
+      run: |
+        cp extension.xml build-linux/out/CascadeWindows/
+        cp -r campaign/* build-linux/out/CascadeWindows/campaign/
+        cp -r graphics/* build-linux/out/CascadeWindows/graphics/
+        cp scripts/cascadewindows.lua build-linux/out/CascadeWindows/scripts/
+
+    - name: Compress files into a zip
+      run: |
+        cd build-linux/out/CascadeWindows/
+        zip -r CascadeWindows.zip ./* --exclude CascadeWindows.zip
+
+    - name: Rename .zip to .ext
+      run: |
+        mv build-linux/out/CascadeWindows/CascadeWindows.zip build-linux/out/CascadeWindows.ext
+
+    - name: Debug output directory
+      run: ls -l build-linux/out
+
+    - name: Verify .ext file exists
+      run: ls -l build-linux/out/CascadeWindows.ext
+
+    - name: Fix file permissions
+      run: chmod 644 build-linux/out/CascadeWindows.ext
+
+    - name: Upload .ext file as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: CascadeWindows.ext
+        path: build-linux/out/CascadeWindows.ext
