@@ -34,10 +34,13 @@ jobs:
         cp -r graphics/* build-linux/out/CascadeWindows/graphics/
         cp scripts/cascadewindows.lua build-linux/out/CascadeWindows/scripts/
 
-    - name: Create .ext file
+    - name: Compress files into a zip
       run: |
         cd build-linux/out/CascadeWindows/
         zip -r CascadeWindows.zip ./* --exclude CascadeWindows.zip
+
+    - name: Rename .zip to .ext
+      run: |
         mv build-linux/out/CascadeWindows/CascadeWindows.zip build-linux/out/CascadeWindows.ext
 
     - name: Debug output directory
