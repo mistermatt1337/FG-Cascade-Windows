@@ -160,7 +160,7 @@ function cascadeWindows()
     for i, w in ipairs(openWindowList) do
         table.insert(sortedNames, w:getClass())
     end
-    Debug.chat("Sorted window classes:", table.concat(sortedNames, ", "))
+    Debug.console("Sorted window classes:", table.concat(sortedNames, ", "))
 
     local startX, startY = 50, 50
     local offsetX, offsetY = 30, 30
@@ -186,20 +186,20 @@ function shouldIgnoreWindow(window)
 
     -- Ignore top-level windows based on priority
     if priority == 1 then
-        Debug.chat("Ignoring top-level window:", sWindowClass);
+        Debug.console("Ignoring top-level window:", sWindowClass);
         return true;
     end
 
     -- Ignore locked windows
     if window.getLockState and window:getLockState() == true then
-        Debug.chat("Ignoring locked window:", sWindowClass);
+        Debug.console("Ignoring locked window:", sWindowClass);
         return true;
     end
 
     -- Check user-configurable ignore options by priority
     for optionKey, ignorePriority in pairs(ignoreOptions) do
         if OptionsManager.isOption(optionKey, ON) and priority == ignorePriority then
-            Debug.chat("Ignoring window due to option:", optionKey, "Class:", sWindowClass, "Priority:", priority);
+            Debug.console("Ignoring window due to option:", optionKey, "Class:", sWindowClass, "Priority:", priority);
             return true;
         end
     end
@@ -218,9 +218,9 @@ function onWindowOpened(window)
     if type(window) == "windowinstance" and not shouldIgnoreWindow(window) then
         -- Add the window to the openWindowList if it is not ignored
         table.insert(openWindowList, window);
-        Debug.chat("Window added to openWindowList:", sWindowClass);
+        Debug.console("Window added to openWindowList:", sWindowClass);
     else
         -- Log why the window was excluded
-        Debug.chat("Window excluded (ignored):", sWindowClass);
+        Debug.console("Window excluded (ignored):", sWindowClass);
     end
 end

@@ -20,9 +20,7 @@ jobs:
     - name: Check for Debug.chat statements
       run: |
         if grep -n '^[^--]*Debug\.chat' scripts/*.lua; then
-          echo "::warning file=scripts::Debug.chat found: build is for testing only"
-          echo "## :warning: Debug.chat found" >> $GITHUB_STEP_SUMMARY
-          echo "This build is for testing only. Please remove or comment out Debug.chat statements before publishing." >> $GITHUB_STEP_SUMMARY
+          echo "::warning file=scripts::Debug.chat found: If build is for LIVE, remove Debug.chat statements."
         fi
 
     - name: Install zip utility
