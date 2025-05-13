@@ -3,7 +3,7 @@ name: Build CascadeWindows Extension
 on:
   push:
     branches:
-      - forking
+      - latest
       - master
   pull_request:
     branches:
