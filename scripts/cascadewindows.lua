@@ -78,6 +78,10 @@ function cascadeWindow(t, i, startX, startY, offsetX, offsetY, positionIndex)
         end
         -- Set the window's position
         t[i].setPosition(startX + positionIndex * offsetX, startY + positionIndex * offsetY)
+        -- Bring the window to the front
+        if t[i].bringToFront ~= nil then
+            t[i]:bringToFront()
+        end
         positionIndex = positionIndex + 1 -- Increment the position index for the next window
     end
 
@@ -87,14 +91,13 @@ end
 function cascadeWindows()
     -- Retrieve the list of open windows
     local openWindowList = Interface.getWindows()
-    --Debug.chat("Open windows:", openWindowList)
+
+
     local startX, startY = 50, 50
     local offsetX, offsetY = 30, 30
     local positionIndex = 0
     -- Iterate through each window in the list
     for i, window in ipairs(openWindowList) do
-        --Debug.chat("Processing window:", window.getClass())
-        -- Delegate the positioning logic to cascadeWindow
         positionIndex = cascadeWindow(openWindowList, i, startX, startY, offsetX, offsetY, positionIndex)
     end
 end
@@ -132,7 +135,7 @@ function shouldIgnoreWindow(window)
     -- Always ignore top-level windows
     for _, className in ipairs(ignoreOptions["TOP_LEVEL_WINDOWS"]) do
         if sWindowClass == className then
-            --Debug.chat("Ignoring top-level window:", sWindowClass);
+            Debug.chat("Ignoring top-level window:", sWindowClass);
             return true;
         end
     end
@@ -142,7 +145,7 @@ function shouldIgnoreWindow(window)
         if optionKey ~= "TOP_LEVEL_WINDOWS" and OptionsManager.isOption(optionKey, ON) then
             for _, className in ipairs(classList) do
                 if sWindowClass == className then
-                    --Debug.chat("Ignoring window due to option:", optionKey, "Class:", sWindowClass);
+                    Debug.chat("Ignoring window due to option:", optionKey, "Class:", sWindowClass);
                     return true;
                 end
             end
@@ -163,9 +166,9 @@ function onWindowOpened(window)
     if type(window) == "windowinstance" and not shouldIgnoreWindow(window) then
         -- Add the window to the openWindowList if it is not ignored
         table.insert(openWindowList, window);
-        --Debug.chat("Window added to openWindowList:", sWindowClass);
+        Debug.chat("Window added to openWindowList:", sWindowClass);
     else
         -- Log why the window was excluded
-        --Debug.chat("Window excluded (ignored):", sWindowClass);
+        Debug.chat("Window excluded (ignored):", sWindowClass);
     end
 end
