@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root version="3.3" release="8.1|CoreRPG:4.1">
-    <announcement text="Cascade Windows" font="emotefont" icon="cascade_icon" />
+    <announcement text="Cascade Windows v1.1 \r2025 Atmotaye" font="emotefont" icon="cascade_icon" />
 	<properties>
 		<name>Feature: Cascade Windows</name>
-		<version>1.0</version>
+		<version>1.1</version>
 		<loadorder>1500</loadorder>
-		<author>Mister Motaye</author>
+		<author>Atmotaye</author>
 		<description>Cascades windows that are opened.</description>
 	</properties>
 

@@ -78,74 +78,129 @@ function cascadeWindow(t, i, startX, startY, offsetX, offsetY, positionIndex)
         end
         -- Set the window's position
         t[i].setPosition(startX + positionIndex * offsetX, startY + positionIndex * offsetY)
+        -- Bring the window to the front
+        if t[i].bringToFront ~= nil then
+            t[i]:bringToFront()
+        end
         positionIndex = positionIndex + 1 -- Increment the position index for the next window
     end
 
     return positionIndex
 end
 
+local windowClassPriority = {
+    -- Priority 1: Top-level windows (not sorted, keep original order)
+    desktopdecalfill = 1,
+    desktopdecal = 1,
+    shortcutsanchor = 1,
+    shortcuts = 1,
+    shortcutbar = 1,
+    imagebackpanel = 1,
+    imagemaxpanel = 1,
+    --chat = 1,
+    modifierstack = 1,
+    desktop_setdc = 1,
+    --dicetower = 1,
+    imagefullpanel = 1,
+    --dicepanel = 1,
+    characterlist = 1,
+    --tabletop_partylist = 1,
+    --tabletop_combatlist = 1,
+
+    -- Priority 2: Combat tracker
+    combattracker_host = 2,
+    combattracker_client = 2,
+
+    -- Priority 3: Party sheet
+    partysheet_host = 3,
+    partysheet_client = 3,
+
+    -- Priority 4: Tools
+    calendar = 4,
+    diceselect = 4,
+    modifiers = 4,
+    effectlist = 4,
+    sound_context = 4,
+    options = 4,
+
+    -- Priority 5: Library
+    library = 5,
+    tokenbag = 5,
+    books_list = 5,
+    masterindex = 5,
+
+    -- Priority 6: Timer
+    timerwindow = 6,
+
+    -- Priority 7: Images
+    imagewindow = 7,
+}
+
+local function getWindowPriority(windowClass)
+    return windowClassPriority[windowClass] or 99
+end
+
 function cascadeWindows()
-    -- Retrieve the list of open windows
     local openWindowList = Interface.getWindows()
-    --Debug.chat("Open windows:", openWindowList)
+
+    -- Sort by priority, then by class name (except for priority 1, which keeps original order)
+    table.sort(openWindowList, function(a, b)
+        local pa, pb = getWindowPriority(a:getClass()), getWindowPriority(b:getClass())
+        if pa ~= pb then
+            return pa < pb
+        end
+        if pa == 1 then
+            return false -- keep original order for top-level windows
+        end
+        return a:getClass() < b:getClass()
+    end)
+
+    -- Debug: print sorted window class names
+    local sortedNames = {}
+    for i, w in ipairs(openWindowList) do
+        table.insert(sortedNames, w:getClass())
+    end
+    Debug.console("Sorted window classes:", table.concat(sortedNames, ", "))
+
     local startX, startY = 50, 50
     local offsetX, offsetY = 30, 30
     local positionIndex = 0
-    -- Iterate through each window in the list
     for i, window in ipairs(openWindowList) do
-        --Debug.chat("Processing window:", window.getClass())
-        -- Delegate the positioning logic to cascadeWindow
         positionIndex = cascadeWindow(openWindowList, i, startX, startY, offsetX, offsetY, positionIndex)
     end
 end
 
+-- Map ignore options to priority numbers instead of explicit class lists
 local ignoreOptions = {
-    [CASCADEWINDOWS_IGNORE_CT_OPEN] = { "combattracker_host", "combattracker_client" },
-    [CASCADEWINDOWS_IGNORE_PS_OPEN] = { "partysheet_host", "partysheet_client" },
-    [CASCADEWINDOWS_IGNORE_TOOLS_OPEN] = { "calendar", "diceselect", "modifiers", "effectlist", "sound_context", "options" },
-    [CASCADEWINDOWS_IGNORE_LIBRARY_OPEN] = { "library", "tokenbag", "books_list", "masterindex" },
-    [CASCADEWINDOWS_IGNORE_TIMER_OPEN] = { "timerwindow" },
-    [CASCADEWINDOWS_IGNORE_IMAGES_OPEN] = { "imagewindow" },
-    ["TOP_LEVEL_WINDOWS"] = {
-        "desktopdecalfill",
-        "desktopdecal",
-        "shortcutsanchor",
-        "shortcuts",
-        "shortcutbar",
-        "imagebackpanel",
-        "imagemaxpanel",
-        "chat",
-        "modifierstack",
-        "desktop_setdc",
-        "dicetower",
-        "imagefullpanel",
-        "dicepanel",
-        "characterlist",
-        "tabletop_partylist",
-        "tabletop_combatlist"
-    }
+    [CASCADEWINDOWS_IGNORE_CT_OPEN] = 2,      -- Combat tracker
+    [CASCADEWINDOWS_IGNORE_PS_OPEN] = 3,      -- Party sheet
+    [CASCADEWINDOWS_IGNORE_TOOLS_OPEN] = 4,   -- Tools
+    [CASCADEWINDOWS_IGNORE_LIBRARY_OPEN] = 5, -- Library
+    [CASCADEWINDOWS_IGNORE_TIMER_OPEN] = 6,   -- Timer
+    [CASCADEWINDOWS_IGNORE_IMAGES_OPEN] = 7,  -- Images
 };
 
 function shouldIgnoreWindow(window)
     local sWindowClass = window.getClass();
+    local priority = getWindowPriority(sWindowClass)
 
-    -- Always ignore top-level windows
-    for _, className in ipairs(ignoreOptions["TOP_LEVEL_WINDOWS"]) do
-        if sWindowClass == className then
-            --Debug.chat("Ignoring top-level window:", sWindowClass);
-            return true;
-        end
+    -- Ignore top-level windows based on priority
+    if priority == 1 then
+        Debug.console("Ignoring top-level window:", sWindowClass);
+        return true;
     end
 
-    -- Check user-configurable ignore options
-    for optionKey, classList in pairs(ignoreOptions) do
-        if optionKey ~= "TOP_LEVEL_WINDOWS" and OptionsManager.isOption(optionKey, ON) then
-            for _, className in ipairs(classList) do
-                if sWindowClass == className then
-                    --Debug.chat("Ignoring window due to option:", optionKey, "Class:", sWindowClass);
-                    return true;
-                end
-            end
+    -- Ignore locked windows
+    if window.getLockState and window:getLockState() == true then
+        Debug.console("Ignoring locked window:", sWindowClass);
+        return true;
+    end
+
+    -- Check user-configurable ignore options by priority
+    for optionKey, ignorePriority in pairs(ignoreOptions) do
+        if OptionsManager.isOption(optionKey, ON) and priority == ignorePriority then
+            Debug.console("Ignoring window due to option:", optionKey, "Class:", sWindowClass, "Priority:", priority);
+            return true;
         end
     end
 
@@ -163,9 +218,9 @@ function onWindowOpened(window)
     if type(window) == "windowinstance" and not shouldIgnoreWindow(window) then
         -- Add the window to the openWindowList if it is not ignored
         table.insert(openWindowList, window);
-        --Debug.chat("Window added to openWindowList:", sWindowClass);
+        Debug.console("Window added to openWindowList:", sWindowClass);
     else
         -- Log why the window was excluded
-        --Debug.chat("Window excluded (ignored):", sWindowClass);
+        Debug.console("Window excluded (ignored):", sWindowClass);
     end
 end

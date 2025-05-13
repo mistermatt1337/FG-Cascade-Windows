@@ -3,7 +3,7 @@ name: Build CascadeWindows Extension
 on:
   push:
     branches:
-      - forking
+      - latest
       - master
   pull_request:
     branches:
@@ -16,6 +16,12 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+
+    - name: Check for Debug.chat statements
+      run: |
+        if grep -n '^[^--]*Debug\.chat' scripts/*.lua; then
+          echo "::warning file=scripts::Debug.chat found: If build is for LIVE, remove Debug.chat statements."
+        fi
 
     - name: Install zip utility
       run: sudo apt-get update && sudo apt-get install -y zip
