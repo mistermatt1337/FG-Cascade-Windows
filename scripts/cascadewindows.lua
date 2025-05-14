@@ -191,6 +191,12 @@ function shouldIgnoreWindow(window)
         return true;
     end
 
+    --ignore minimized windows
+    if window.isMinimized and window:isMinimized() == true then
+        Debug.console("Ignoring minimized window:", sWindowClass);
+        return true;
+    end
+
     -- Check user-configurable ignore options by priority
     for optionKey, ignorePriority in pairs(ignoreOptions) do
         if OptionsManager.isOption(optionKey, ON) and priority == ignorePriority then
