@@ -90,6 +90,9 @@ end
 
 local windowClassPriority = {
     -- Priority 1: Top-level windows (not sorted, keep original order)
+    desktop = 1,
+    desktoptop = 1,
+    desktopbottom = 1,
     desktopdecalfill = 1,
     desktopdecal = 1,
     shortcutsanchor = 1,
@@ -97,24 +100,16 @@ local windowClassPriority = {
     shortcutbar = 1,
     imagebackpanel = 1,
     imagemaxpanel = 1,
-    --chat = 1,
     modifierstack = 1,
     desktop_setdc = 1,
-    --dicetower = 1,
     imagefullpanel = 1,
-    --dicepanel = 1,
     characterlist = 1,
-    --tabletop_partylist = 1,
-    --tabletop_combatlist = 1,
-
     -- Priority 2: Combat tracker
     combattracker_host = 2,
     combattracker_client = 2,
-
     -- Priority 3: Party sheet
     partysheet_host = 3,
     partysheet_client = 3,
-
     -- Priority 4: Tools
     calendar = 4,
     diceselect = 4,
@@ -122,16 +117,16 @@ local windowClassPriority = {
     effectlist = 4,
     sound_context = 4,
     options = 4,
-
+    timerwindow = 4,
     -- Priority 5: Library
     library = 5,
     tokenbag = 5,
     books_list = 5,
+    story_book_list = 5,
     masterindex = 5,
-
-    -- Priority 6: Timer
-    timerwindow = 6,
-
+    reference_manual = 5,
+    -- Priority 6: Pages
+    referencemanualpage = 6,
     -- Priority 7: Images
     imagewindow = 7,
 }
