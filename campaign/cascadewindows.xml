@@ -4,7 +4,327 @@
     <script>
       function onInit()
         self.close();
-        CascadeWindows.cascadeWindows();
+        fCascadeWindows.cascadeWindows();
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="referencemanualpage" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="imagewindow" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="asset_preview" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="battle" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="item" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="npc" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="treasureparcel" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="table" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="vehicle" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="location" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="quest" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="note" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="archetype" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="faction" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="talent" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
+      end
+    </script>
+    <sheetdata>
+    </sheetdata>
+  </windowclass>
+  <windowclass name="house" merge="join">
+    <script file="scripts/cascadewindows.lua" />
+    <script>
+      function onInit()
+        if super and super.onInit then
+          super.onInit()
+        end
+        registerMenuItem(Interface.getString("library_recordtype_label_cascadewindows"), "cascade_icon_windowcontrol", 6)
+        registerMenuItem(Interface.getString("dropdown_menu_cascadesimilar"), "cascade_icon_windowcontrol", 6, 8)
+      end
+
+      function onMenuSelection(selection, subselection)
+        if selection == 6 and subselection == 8 then
+          cascadeSimilarWindows(self)
+        end
       end
     </script>
     <sheetdata>

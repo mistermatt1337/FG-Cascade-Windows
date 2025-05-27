@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <root version="3.3" release="8.1|CoreRPG:4.1">
-    <announcement text="Cascade Windows v1.1 \r2025 Atmotaye" font="emotefont" icon="cascade_icon" />
+    <announcement text="Cascade Windows v1.2 \r2025 Atmotaye" font="emotefont" icon="cascade_icon" />
 	<properties>
 		<name>Feature: Cascade Windows</name>
-		<version>1.1</version>
+		<version>1.2</version>
 		<loadorder>1500</loadorder>
 		<author>Atmotaye</author>
 		<description>Cascades windows that are opened.</description>
 	</properties>
 
 	<base>
-		<script name="CascadeWindows" file="scripts/cascadewindows.lua" />
+		<script name="fCascadeWindows" file="scripts/cascadewindows.lua" />
 		<icon name="cascade_icon" file="graphics/icons/cascade_icon.png" />
-        <icon name="sidebar_icon_cascade" file="graphics/sidebar/sidebar_icon_cascade.png" />
+        <icon name="cascade_icon_sidebar" file="graphics/sidebar/cascade_icon_sidebar.png" />
+		<icon name="cascade_icon_windowcontrol" file="graphics/icons/cascade_icon_windowcontrol.png" />
 
 		<includefile source="campaign/cascadewindows.xml" />
 
         <string name="sidebar_tooltip_cascadeall">Cascade All</string>
+		<string name="dropdown_menu_cascadesimilar">Cascade Similar Windows</string>
         <string name="library_recordtype_label_cascadewindows">Cascade Windows</string>
 		<string name="option_header_cascadewindows">Cascade Windows</string>
 		<string name="option_label_CASCADEWINDOWS_IGNORE_CT_OPEN">Ignore CT Open</string>

@@ -42,12 +42,13 @@ function onInit()
     OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_IMAGES_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_IMAGES_OPEN", option_entry_cycler,
     { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
     Comm.registerSlashHandler("ccw", cascadeWindows);
+
 end
 
 function onTabletopInit()
     if not IS_FGC then
         local tButton = {
-            sIcon = "sidebar_icon_cascade",
+            sIcon = "cascade_icon_sidebar",
             tooltipres = "library_recordtype_label_cascadewindows",
             class = "cascadewindows",
         };
@@ -90,6 +91,9 @@ end
 
 local windowClassPriority = {
     -- Priority 1: Top-level windows (not sorted, keep original order)
+    desktop = 1,
+    desktoptop = 1,
+    desktopbottom = 1,
     desktopdecalfill = 1,
     desktopdecal = 1,
     shortcutsanchor = 1,
@@ -97,24 +101,16 @@ local windowClassPriority = {
     shortcutbar = 1,
     imagebackpanel = 1,
     imagemaxpanel = 1,
-    --chat = 1,
     modifierstack = 1,
     desktop_setdc = 1,
-    --dicetower = 1,
     imagefullpanel = 1,
-    --dicepanel = 1,
     characterlist = 1,
-    --tabletop_partylist = 1,
-    --tabletop_combatlist = 1,
-
     -- Priority 2: Combat tracker
     combattracker_host = 2,
     combattracker_client = 2,
-
     -- Priority 3: Party sheet
     partysheet_host = 3,
     partysheet_client = 3,
-
     -- Priority 4: Tools
     calendar = 4,
     diceselect = 4,
@@ -122,29 +118,59 @@ local windowClassPriority = {
     effectlist = 4,
     sound_context = 4,
     options = 4,
-
+    timerwindow = 4,
     -- Priority 5: Library
     library = 5,
     tokenbag = 5,
     books_list = 5,
+    story_book_list = 5,
     masterindex = 5,
-
-    -- Priority 6: Timer
-    timerwindow = 6,
-
-    -- Priority 7: Images
-    imagewindow = 7,
+    -- Priority 6: Pages
+    reference_manual = 6,
+    charsheet = 6,
+    -- Priority: Common Window Instances
+    -- Campaign
+    imagewindow = 8,
+    asset_preview = 8,
+    battle = 9,
+    item = 10,
+    npc = 11,
+    treasureparcel = 12,
+    table = 13,
+    vehicle = 14,
+    -- World
+    location = 15,
+    quest = 16,
+    referencemanualpage = 17,
+    note = 18,
+    -- Dune2D20
+    archetype = 30,
+    faction = 31,
+    talent = 32,
+    house = 33,
 }
 
 local function getWindowPriority(windowClass)
     return windowClassPriority[windowClass] or 99
 end
 
-function cascadeWindows()
+function cascadeWindows(windowClass)
     local openWindowList = Interface.getWindows()
+    local filteredList
+
+    if windowClass then
+        filteredList = {}
+        for _, w in ipairs(openWindowList) do
+            if w.getClass and w:getClass() == windowClass then
+                table.insert(filteredList, w)
+            end
+        end
+    else
+        filteredList = openWindowList
+    end
 
     -- Sort by priority, then by class name (except for priority 1, which keeps original order)
-    table.sort(openWindowList, function(a, b)
+    table.sort(filteredList, function(a, b)
         local pa, pb = getWindowPriority(a:getClass()), getWindowPriority(b:getClass())
         if pa ~= pb then
             return pa < pb
@@ -157,7 +183,7 @@ function cascadeWindows()
 
     -- Debug: print sorted window class names
     local sortedNames = {}
-    for i, w in ipairs(openWindowList) do
+    for i, w in ipairs(filteredList) do
         table.insert(sortedNames, w:getClass())
     end
     Debug.console("Sorted window classes:", table.concat(sortedNames, ", "))
@@ -165,8 +191,8 @@ function cascadeWindows()
     local startX, startY = 50, 50
     local offsetX, offsetY = 30, 30
     local positionIndex = 0
-    for i, window in ipairs(openWindowList) do
-        positionIndex = cascadeWindow(openWindowList, i, startX, startY, offsetX, offsetY, positionIndex)
+    for i, window in ipairs(filteredList) do
+        positionIndex = cascadeWindow(filteredList, i, startX, startY, offsetX, offsetY, positionIndex)
     end
 end
 
@@ -189,13 +215,16 @@ function shouldIgnoreWindow(window)
         Debug.console("Ignoring top-level window:", sWindowClass);
         return true;
     end
-
     -- Ignore locked windows
     if window.getLockState and window:getLockState() == true then
         Debug.console("Ignoring locked window:", sWindowClass);
         return true;
     end
-
+    --ignore minimized windows
+    if window.isMinimized and window:isMinimized() == true then
+        Debug.console("Ignoring minimized window:", sWindowClass);
+        return true;
+    end
     -- Check user-configurable ignore options by priority
     for optionKey, ignorePriority in pairs(ignoreOptions) do
         if OptionsManager.isOption(optionKey, ON) and priority == ignorePriority then
@@ -216,11 +245,19 @@ function onWindowOpened(window)
 
     local sWindowClass = window.getClass();
     if type(window) == "windowinstance" and not shouldIgnoreWindow(window) then
-        -- Add the window to the openWindowList if it is not ignored
         table.insert(openWindowList, window);
         Debug.console("Window added to openWindowList:", sWindowClass);
     else
-        -- Log why the window was excluded
         Debug.console("Window excluded (ignored):", sWindowClass);
+        return
     end
+end
+
+function cascadeSimilarWindows(window)
+    local windowClass = window.getClass and window:getClass() or nil
+    if not windowClass then
+        Debug.console("Cascade: Could not determine windowclass.")
+        return
+    end
+    cascadeWindows(windowClass)
 end
