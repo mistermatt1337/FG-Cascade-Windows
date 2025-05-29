@@ -41,7 +41,8 @@ function onInit()
     { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
     OptionsManager.registerOption2(CASCADEWINDOWS_IGNORE_IMAGES_OPEN, true, option_header, "option_label_CASCADEWINDOWS_IGNORE_IMAGES_OPEN", option_entry_cycler,
     { labels = option_val_on, values = ON, baselabel = option_val_off, baseval = OFF, default = OFF });
-    Comm.registerSlashHandler("ccw", cascadeWindows);
+    Comm.registerSlashHandler("ccw", cascadeSlashHandler);
+    Comm.registerSlashHandler("cascadewindows", cascadeSlashHandler);
 
 end
 
@@ -155,18 +156,35 @@ local function getWindowPriority(windowClass)
 end
 
 function cascadeWindows(windowClass)
-    local openWindowList = Interface.getWindows()
-    local filteredList
+    if windowClass == "" then windowClass = nil end
+    
+    local sortedList = getSortedWindowList(windowClass)
 
-    if windowClass then
-        filteredList = {}
-        for _, w in ipairs(openWindowList) do
-            if w.getClass and w:getClass() == windowClass then
-                table.insert(filteredList, w)
-            end
+    -- Debug: print sorted window class names
+    local sortedNames = {}
+    for i, w in ipairs(sortedList) do
+        table.insert(sortedNames, w:getClass())
+    end
+    Debug.console("Sorted window classes:", table.concat(sortedNames, ", "))
+
+    local startX, startY = 50, 50
+    local offsetX, offsetY = 30, 30
+    local positionIndex = 0
+    for i, window in ipairs(sortedList) do
+        positionIndex = cascadeWindow(sortedList, i, startX, startY, offsetX, offsetY, positionIndex)
+    end
+end
+
+-- Returns a sorted list of windows, filtered by windowClass if provided
+function getSortedWindowList(windowClass)
+    local openWindowList = Interface.getWindows()
+    local filteredList = {}
+
+    for _, w in ipairs(openWindowList) do
+        if (not windowClass or (w.getClass and w:getClass() == windowClass))
+            and not shouldIgnoreWindow(w) then
+            table.insert(filteredList, w)
         end
-    else
-        filteredList = openWindowList
     end
 
     -- Sort by priority, then by class name (except for priority 1, which keeps original order)
@@ -181,19 +199,7 @@ function cascadeWindows(windowClass)
         return a:getClass() < b:getClass()
     end)
 
-    -- Debug: print sorted window class names
-    local sortedNames = {}
-    for i, w in ipairs(filteredList) do
-        table.insert(sortedNames, w:getClass())
-    end
-    Debug.console("Sorted window classes:", table.concat(sortedNames, ", "))
-
-    local startX, startY = 50, 50
-    local offsetX, offsetY = 30, 30
-    local positionIndex = 0
-    for i, window in ipairs(filteredList) do
-        positionIndex = cascadeWindow(filteredList, i, startX, startY, offsetX, offsetY, positionIndex)
-    end
+    return filteredList
 end
 
 -- Map ignore options to priority numbers instead of explicit class lists
@@ -207,6 +213,12 @@ local ignoreOptions = {
 };
 
 function shouldIgnoreWindow(window)
+    -- Ignore subwindows (only act on top-level windows)
+    if window.getParent and window:getParent() ~= nil then
+        Debug.console("Ignoring subwindow:", window.getClass());
+        return true;
+    end
+
     local sWindowClass = window.getClass();
     local priority = getWindowPriority(sWindowClass)
 
@@ -253,11 +265,15 @@ function onWindowOpened(window)
     end
 end
 
-function cascadeSimilarWindows(window)
-    local windowClass = window.getClass and window:getClass() or nil
-    if not windowClass then
+function cascadeSimilarWindows(windowClass)
+    if not windowClass or type(windowClass) ~= "string" then
         Debug.console("Cascade: Could not determine windowclass.")
         return
     end
     cascadeWindows(windowClass)
+end
+
+function cascadeSlashHandler()
+    cascadeWindows(nil)
+    return true
 end
